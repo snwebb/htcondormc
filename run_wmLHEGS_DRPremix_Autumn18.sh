@@ -1,7 +1,6 @@
 #!/bin/bash
 i=1
 FRAGMENT=${!i}; i=$((i+1))
-GRIDPACK=${!i}; i=$((i+1))
 NEVENTS=${!i}; i=$((i+1))
 NTHREADS=${!i}; i=$((i+1))
 
