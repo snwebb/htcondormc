@@ -1,15 +1,8 @@
-
-error   = err.$(Process)                                                
-output  = out.$(Process)                                                
-log     = foo.log
-
-queue 1
-
+#!/usr/bin/env python
 
 import os
 import htcondor
 pjoin = os.path.join
-schedd = htcondor.Schedd()
 
 events_per_job = 10
 njobs = 2
@@ -35,5 +28,6 @@ sub = htcondor.Submit({
         output = pjoin(output_path,  "out.$(Process)")
         })
 
+schedd = htcondor.Schedd()
 with schedd.transaction() as txn:
     print(sub.queue(txn, njobs))
