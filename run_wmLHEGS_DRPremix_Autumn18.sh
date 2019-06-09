@@ -3,6 +3,7 @@ i=1
 FRAGMENT=${!i}; i=$((i+1))
 NEVENTS=${!i}; i=$((i+1))
 NTHREADS=${!i}; i=$((i+1))
+OUTPATH=${!i}; i=$((i+1))
 
 ############################################
 # ---------------- wmLHEGS-----------------
@@ -105,6 +106,7 @@ cmsDriver.py step2 \
 
 cmsRun DRPremix_2_cfg | tee log_DRPremix_2.txt
 
+mv DRPremix.root $OUTPATH
 
 # ############################################
 # # ---------------- MINIAOD-----------------
