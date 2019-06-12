@@ -1,0 +1,13 @@
+Executable = /afs/cern.ch/work/a/aalbert/public/2019-06-07_lowmassdiphoton/htcondormc/run_wmLHEGS_DRPremix_Autumn18.sh
+error = ggh_m10/logging/$(Cluster).err.$(Process)
+log = ggh_m10/logging/$(Cluster).log.$(Process)
+arguments = /afs/cern.ch/work/a/aalbert/public/2019-06-07_lowmassdiphoton/htcondormc/fragments/ggh_m10_cfg.py 500 1 /afs/cern.ch/work/a/aalbert/public/2019-06-07_lowmassdiphoton/htcondormc/ggh_m10/output
+transfer_input_files = x509up_u74570, pulist.txt
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+Universe = vanilla
+notification = Error
+Initialdir = . 
+getenv = True
++MaxRuntime = 86400
+queue 100
