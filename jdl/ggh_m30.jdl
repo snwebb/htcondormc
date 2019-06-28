@@ -1,0 +1,22 @@
+
+Process = ggh_m30
+nevents = 10
+ncpus = 1
+njobs = 1
+home = /afs/cern.ch/work/a/aalbert/public/2019-06-07_lowmassdiphoton/htcondormc
+
+Executable = $(home)/run_wmLHEGS_DRPremix_Autumn18.sh
+error = $(Process)/logging/$(Cluster).err.$(Process)
+log = $(Process)/logging/$(Cluster).log.$(Process)
+arguments = $(home)/fragments/$(Process)_cfg.py $(nevents) $(ncpus) /eos/user/a/aalbert/mc/lowmassdiphoton/$(Process)
+transfer_input_files = pulist.txt
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+Universe = vanilla
+notification = Error
+Initialdir = . 
+getenv = True
+request_cpus = $(ncpus)
++MaxRuntime = 86400
+
+queue $(njobs)

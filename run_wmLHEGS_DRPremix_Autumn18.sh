@@ -5,8 +5,9 @@ NEVENTS=${!i}; i=$((i+1))
 NTHREADS=${!i}; i=$((i+1))
 OUTPATH=${!i}; i=$((i+1))
 
-echo "Initiating VOMS proxy."
-export X509_USER_PROXY=$(readlink -e ./x509up*)
+
+# echo "Initiating VOMS proxy."
+# export X509_USER_PROXY=$(readlink -e ./x509up*)
 
 ############################################
 # ---------------- wmLHEGS-----------------
@@ -51,18 +52,23 @@ cmsRun wmLHEGS_cfg.py | tee log_wmLHEGS.txt
 #---------------- DR-----------------
 ###########################################
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-if [ -r CMSSW_10_2_5/src ] ; then
- echo release CMSSW_10_2_5 already exists
-else
-scram p CMSSW CMSSW_10_2_5
-fi
-cd CMSSW_10_2_5/src
+# if [ -r CMSSW_10_2_5/src ] ; then
+#  echo release CMSSW_10_2_5 already exists
+# else
+# scram p CMSSW CMSSW_10_2_5
+# fi
+# cd CMSSW_10_2_5/src
+# eval `scram runtime -sh`
+# scram b
+# cd ../../
+
+# Use premade CMSSW environment to allow for modifications
+pushd /afs/cern.ch/work/a/aalbert/public/2019-06-07_lowmassdiphoton/htcondormc/CMSSW_10_2_5/src;
 eval `scram runtime -sh`
-scram b
-cd ../../
+popd
+
 
 echo "Choose random PU input file."
-# PULIST=(`/cvmfs/cms.cern.ch/slc6_amd64_gcc700/cms/dasgoclient/v01.01.08/bin/dasgoclient --query='file dataset=/Neutrino_E-10_gun/RunIISummer17PrePremix-PUAutumn18_102X_upgrade2018_realistic_v15-v1/GEN-SIM-DIGI-RAW'`)
 PULIST=($(cat pulist.txt))
 PUFILE=${PULIST[$RANDOM % ${#PULIST[@]}]}
 echo "Chose PU File: ${PUFILE}"
@@ -87,11 +93,11 @@ cmsDriver.py step1 \
 -n ${NEVENTS} || exit $? ;
 
 cmsRun DRPremix_1_cfg.py | tee log_DRPremix_1.txt
-
+rm -v wmLHEGS.root
 
 cmsDriver.py step2 \
 --filein file:DRPremix_step1.root \
---fileout file:DRPremix.root \
+--fileout file:AOD.root \
 --mc \
 --eventcontent AODSIM \
 --runUnscheduled \
@@ -106,18 +112,31 @@ cmsDriver.py step2 \
 --customise Configuration/DataProcessing/Utils.addMonitoring -n ${NEVENTS} || exit $? ;
 
 cmsRun DRPremix_2_cfg.py | tee log_DRPremix_2.txt
+rm -v DRPremix_step1.root
 
 # ############################################
 # # ---------------- MINIAOD-----------------
 # ############################################
 
-# cmsDriver.py step1 --filein "dbs:/GluGluHToGG_M70_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM" --fileout file:HIG-RunIIAutumn18MiniAOD-01224.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODSIM --conditions 102X_upgrade2018_realistic_v15 --step PAT --nThreads 8 --geometry DB:Extended --era Run2_2018 --python_filename HIG-RunIIAutumn18MiniAOD-01224_1_cfg.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 8597 || exit $? ;
+cmsDriver.py step1 \
+--filein "file:AOD.root" \
+--fileout "file:MiniAOD.root" \
+--mc \
+--eventcontent MINIAODSIM \
+--runUnscheduled \
+--datatier MINIAODSIM \
+--conditions 102X_upgrade2018_realistic_v15 \
+--step PAT \
+--nThreads ${NTHREADS} \
+--geometry DB:Extended \
+--era Run2_2018 \
+--customise Configuration/DataProcessing/Utils.addMonitoring \
+--python_filename MiniAOD_cfg.py \
+--no_exec \
+-n ${NEVENTS};
 
+cmsRun MiniAOD_cfg.py | tee log_miniaod.txt
 
-# touch out1.root
-# env > out1.txt
-# touch out2.root
-# touch out2.txt
 
 OUTTAG=$(echo $JOBFEATURES | sed "s|_[0-9]*$||;s|.*_||")
 
@@ -126,7 +145,7 @@ if [ -z "${OUTTAG}" ]; then
 fi
 
 echo "Using output tag: ${OUTTAG}"
-
+mkdir -p ${OUTPATH}
 for file in *.root; do 
     mv $file $OUTPATH/$(echo $file | sed "s|.root|_${OUTTAG}.root|g")
 done
