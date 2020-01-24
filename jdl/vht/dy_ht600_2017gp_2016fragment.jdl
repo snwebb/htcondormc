@@ -1,0 +1,23 @@
+
+tag = dy_ht600_2017gp_2016fragment
+nevents = 500
+ncpus = 1
+njobs = 1
+home = /afs/cern.ch/work/a/aalbert/public/2019-06-07_lowmassdiphoton/htcondormc
+fragment=fragments/vht/2016_central_DYJetsToLL_M-50_HTbinned_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_cff.py
+
+Executable = $(home)/run_wmLHEGS_Summer15.sh
+output = logging/$(tag)_$(Cluster).out.$(Process)
+error = logging/$(tag)_$(Cluster).err.$(Process)
+log = logging/$(tag)_$(Cluster).log.$(Process)
+arguments = $(home)/$(fragment) $(nevents) $(ncpus) /eos/user/a/aalbert/mc/vht/$(tag)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+Universe = vanilla
+notification = Error
+Initialdir = . 
+getenv = True
+request_cpus = $(ncpus)
++MaxRuntime = 86400
+
+queue $(njobs)
