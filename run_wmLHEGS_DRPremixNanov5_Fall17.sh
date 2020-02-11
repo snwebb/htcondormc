@@ -26,8 +26,8 @@ cp ${FRAGMENT}  Configuration/GenProduction/python/
 
 scram b
 cd ../../
-seed=$(date +%s)\
-cmsDriver.py Configuration/GenProduction/python/$(basename $FRAGMENT)  \
+seed=$(($(date +%s) % 100 + 1))
+cmsDriver.py Configuration/GenProduction/python/$(basename $FRAGMENT) \
 --fileout file:wmLHEGS.root \
 --mc \
 --eventcontent RAWSIM,LHE \
@@ -120,8 +120,8 @@ cmsDriver.py step1 \
 --nThreads ${NTHREADS} \
 --scenario pp \
 --era Run2_2017,run2_miniAOD_94XFall17  \
---filein file:step-1.root \
---fileout file:step0.root
+--filein file:AOD.root \
+--fileout file:MiniAOD.root \
 --customise Configuration/DataProcessing/Utils.addMonitoring \
 --python_filename MiniAOD_cfg.py \
 --no_exec \
@@ -156,7 +156,6 @@ cmsDriver.py step1 \
 --nThreads ${NTHREADS} \
 --era Run2_2017,run2_nanoAOD_94XMiniAODv2  \
 --python_filename NanoAOD_cfg.py \
-
 --no_exec \
 --customise Configuration/DataProcessing/Utils.addMonitoring \
 -n ${NEVENTS} || exit $? ; 
