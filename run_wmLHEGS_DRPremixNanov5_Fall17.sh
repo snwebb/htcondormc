@@ -24,9 +24,10 @@ cp ${FRAGMENT}  Configuration/GenProduction/python/
 
 [ -s Configuration/GenProduction/python/$(basename $FRAGMENT) ] || exit $?;
 
+SEED=${RANDOM}
+echo "Initial seed in ${SEED}"
 scram b
 cd ../../
-seed=$(($(date +%s) % 100 + 1))
 cmsDriver.py Configuration/GenProduction/python/$(basename $FRAGMENT) \
 --fileout file:wmLHEGS.root \
 --mc \
@@ -41,7 +42,7 @@ cmsDriver.py Configuration/GenProduction/python/$(basename $FRAGMENT) \
 --python_filename wmLHEGS_cfg.py \
 --no_exec \
 --customise Configuration/DataProcessing/Utils.addMonitoring \
---customise_commands process.RandomNumberGeneratorService.externalLHEProducer.initialSeed="int(${seed}%100)" \
+--customise_commands process.RandomNumberGeneratorService.externalLHEProducer.initialSeed="${SEED}" \
 -n ${NEVENTS} || exit $? ;
 
 cmsRun wmLHEGS_cfg.py | tee log_wmLHEGS.txt
@@ -149,7 +150,7 @@ cmsDriver.py step1 \
 --filein "file:MiniAOD.root" \
 --fileout "file:NanoAOD.root" \
 --mc \
---eventcontent NANOEDMAODSIM \
+--eventcontent NANOAODSIM \
 --datatier NANOAODSIM \
 --conditions 102X_mc2017_realistic_v7 \
 --step NANO \
@@ -173,9 +174,11 @@ mkdir -p ${OUTPATH}
 for file in Nano*.root; do 
     mv $file $OUTPATH/$(echo $file | sed "s|.root|_${OUTTAG}.root|g")
 done
-for file in *.txt; do 
-    mv $file $OUTPATH/$(echo $file | sed "s|.root|_${OUTTAG}.txt|g")
-done
+
+# rm pulist*
+# for file in *.txt; do 
+#     mv $file $OUTPATH/$(echo $file | sed "s|.root|_${OUTTAG}.txt|g")
+# done
 
 rm -r *root *txt *py
 
