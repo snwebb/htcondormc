@@ -1,6 +1,6 @@
 #!/bin/bash
 i=1
-GRIDPACK=${!i}; i=$((i+1))
+#GRIDPACK=${!i}; i=$((i+1))
 FRAGMENT=${!i}; i=$((i+1))
 NEVENTS=${!i}; i=$((i+1))
 NTHREADS=${!i}; i=$((i+1))
@@ -9,42 +9,42 @@ OUTPATH=${!i}; i=$((i+1))
 #!/bin/bash
 # export SCRAM_ARCH=slc6_amd64_gcc630
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-if [ -r CMSSW_9_3_4/src ] ; then 
- echo release CMSSW_9_3_4 already exists
-else
-scram p CMSSW CMSSW_9_3_4
-fi
-cd CMSSW_9_3_4/src
+# if [ -r CMSSW_9_3_4/src ] ; then 
+#  echo release CMSSW_9_3_4 already exists
+# else
+# scram p CMSSW CMSSW_9_3_4
+# fi
+cd CMSSW_11_0_2/src
 eval `scram runtime -sh`
 
 mkdir -p Configuration/GenProduction/python/
 cp ${FRAGMENT}  Configuration/GenProduction/python/
-sed -i "s/@GRIDPACK/${GRIDPACK}" Configuration/GenProduction/python/$(basename $FRAGMENT)
+#sed -i "s/@GRIDPACK/${GRIDPACK}" Configuration/GenProduction/python/$(basename $FRAGMENT)
 
 [ -s Configuration/GenProduction/python/$(basename $FRAGMENT) ] || exit $?;
 
 scram b
 cd ../../
 seed=$(date +%s)
+
 cmsDriver.py Configuration/GenProduction/python/$(basename $FRAGMENT) \
---fileout file:wmLHEGEN.root \
+--fileout file:fxfxstudy.root \
 --mc \
---eventcontent RAWSIM,LHE \
---datatier GEN-SIM,LHE \
---conditions 93X_mc2017_realistic_v3 \
---beamspot Realistic25ns13TeVEarly2017Collision \
---step LHE,GEN \
+--eventcontent NANOAODSIM \
+--datatier NANOAOD \
+--conditions auto:mc \
+--step LHE,GEN,NANOGEN \
 --nThreads ${NTHREADS} \
 --geometry DB:Extended \
 --era Run2_2017 \
---python_filename wmLHEGEN.py \
+--python_filename fxfxstudy.py \
 --no_exec \
---customise Configuration/DataProcessing/Utils.addMonitoring \
 --customise_commands process.RandomNumberGeneratorService.externalLHEProducer.initialSeed="int(${seed}%100)" \
 -n ${NEVENTS} || exit $? ; 
 
+#--customise Configuration/DataProcessing/Utils.addMonitoring \
 
-cmsRun wmLHEGEN.py | tee log_wmLHEGEN.txt
+cmsRun fxfxstudy.py | tee log_fxfxstudy.txt
 
 OUTTAG=$(echo $JOBFEATURES | sed "s|_[0-9]*$||;s|.*_||")
 
