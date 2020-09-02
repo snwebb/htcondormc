@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
-    args = cms.vstring('/cvmfs/cms.cern.ch/phys_generator/gridpacks/2017/13TeV/madgraph/V5_2.6.0/Vjets_Nbinned_VpTbinned/wellnu2j_WpT-70to180_5f_NLO_FXFX_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz'),
+    args = cms.vstring('/eos/user/s/sawebb/HInv/genproductions/bin/MadGraph5_aMCatNLO/cmsconnect/wellnu1j_WpT-140toInf_5f_NLO_WITHFXFX_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz'),
     nEvents = cms.untracked.uint32(5000),
     numberOfParameters = cms.uint32(1),
     outputFile = cms.string('cmsgrid_final.lhe'),
@@ -37,7 +37,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:doFxFx = on',
             'JetMatching:qCutME = 10.',#this must match the ptj cut in the lhe generation step
             'JetMatching:nQmatch = 5', #4 corresponds to 4-flavour scheme (no matching of b-quarks), 5 for 5-flavour scheme
-            'JetMatching:nJetMax = 2', #number of partons in born matrix element for highest multiplicity
+            'JetMatching:nJetMax = 1', #number of partons in born matrix element for highest multiplicity
             'TimeShower:mMaxGamma = 4.0',
             
             #PSweights
@@ -63,9 +63,4 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     )
 )
 
-LHEVpTFilter = cms.EDFilter("LHEVpTFilter",
-    src = cms.InputTag("externalLHEProducer"),
-    VpTMin = cms.double(100),
-    VpTMax = cms.double(150),
-)
-ProductionFilterSequence = cms.Sequence(generator*LHEVpTFilter)
+ProductionFilterSequence = cms.Sequence(generator)

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
-    args = cms.vstring('/cvmfs/cms.cern.ch/phys_generator/gridpacks/2017/13TeV/madgraph/V5_2.6.0/Vjets_Nbinned_VpTbinned/wellnu2j_WpT-70to180_5f_NLO_FXFX_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz'),
+    args = cms.vstring('/eos/user/s/sawebb/HInv/genproductions/bin/MadGraph5_aMCatNLO/cmsconnect/wellnu2j_WpT-140toInf_5f_NLO_WITHFXFX_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz'),
     nEvents = cms.untracked.uint32(5000),
     numberOfParameters = cms.uint32(1),
     outputFile = cms.string('cmsgrid_final.lhe'),
@@ -39,21 +39,6 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:nQmatch = 5', #4 corresponds to 4-flavour scheme (no matching of b-quarks), 5 for 5-flavour scheme
             'JetMatching:nJetMax = 2', #number of partons in born matrix element for highest multiplicity
             'TimeShower:mMaxGamma = 4.0',
-            
-            #PSweights
-			'UncertaintyBands:doVariations = on',
-			# 3 sets of variations for ISR&FSR up/down
-			# Reduced sqrt(2)/(1/sqrt(2)), Default 2/0.5 and Conservative 4/0.25 variations
-        	'UncertaintyBands:List = {\
-			isrRedHi isr:muRfac=0.707,fsrRedHi fsr:muRfac=0.707,isrRedLo isr:muRfac=1.414,fsrRedLo fsr:muRfac=1.414,\
-			isrDefHi isr:muRfac=0.5, fsrDefHi fsr:muRfac=0.5,isrDefLo isr:muRfac=2.0,fsrDefLo fsr:muRfac=2.0,\
-			isrConHi isr:muRfac=0.25, fsrConHi fsr:muRfac=0.25,isrConLo isr:muRfac=4.0,fsrConLo fsr:muRfac=4.0}',
-
-	        'UncertaintyBands:MPIshowers = on',
-    	    'UncertaintyBands:overSampleFSR = 10.0',
-        	'UncertaintyBands:overSampleISR = 10.0',
-        	'UncertaintyBands:FSRpTmin2Fac = 20',
-        	'UncertaintyBands:ISRpTmin2Fac = 1'
         ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CP5Settings',
@@ -63,9 +48,4 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     )
 )
 
-LHEVpTFilter = cms.EDFilter("LHEVpTFilter",
-    src = cms.InputTag("externalLHEProducer"),
-    VpTMin = cms.double(100),
-    VpTMax = cms.double(150),
-)
-ProductionFilterSequence = cms.Sequence(generator*LHEVpTFilter)
+ProductionFilterSequence = cms.Sequence(generator)
