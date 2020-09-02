@@ -1,0 +1,22 @@
+
+tag = w1j-nofxfx
+ncpus = 1
+home = /eos/user/s/sawebb/HInv/CMSSW_11_0_2/src/Configuration/htcondormc
+fragment=$(home)/fragments/frag-W1J-NOFXFX.py
+transfer_input_files = $(home)/pulist_fall17.txt
+should_transfer_files = YES
+Executable = $(home)/run_w1j-nofxfx.sh
+output = $(home)/logging/$(tag)_$(Cluster).out.$(Process)
+error = $(home)/logging/$(tag)_$(Cluster).err.$(Process)
+log = $(home)/logging/$(tag)_$(Cluster).log.$(Process)
+arguments = $(fragment) $(nevents) $(ncpus) /eos/user/s/sawebb/HInv/FXFX_OUTPUT/$(tag)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+Universe = vanilla
+notification = Error
+Initialdir = . 
+getenv = False
+request_cpus = $(ncpus)
++MaxRuntime = 43200
+
+queue $(njobs)
