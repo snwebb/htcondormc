@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
-    args = cms.vstring('/eos/user/s/sawebb/HInv/genproductions/bin/MadGraph5_aMCatNLO/cmsconnect/wellnu1j_WpT-140toInf_5f_NLO_NOFXFX_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz'),
+    args = cms.vstring('/eos/user/s/sawebb/HInv/genproductions/bin/MadGraph5_aMCatNLO/cmsconnect_v3/wellnu1j_WpT-140toInf_5f_NLO_NOFXFX_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz'),
     nEvents = cms.untracked.uint32(5000),
     numberOfParameters = cms.uint32(1),
     outputFile = cms.string('cmsgrid_final.lhe'),

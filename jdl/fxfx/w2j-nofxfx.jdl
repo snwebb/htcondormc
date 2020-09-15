@@ -1,15 +1,15 @@
-nevents = 1000
+nevents_perjob = 10
+njobs = 1
 tag = w2j-nofxfx
 ncpus = 1
 home = /afs/cern.ch/user/s/sawebb/work/private/Hinv/htcondormc
 fragment=$(home)/fragments/frag-W2J-NOFXFX.py
-#transfer_input_files = $(home)/pulist_fall17.txt
 should_transfer_files = YES
 Executable = $(home)/run_fxfxstudy.sh
 output = $(home)/logging/$(tag)_$(Cluster).out.$(Process)
 error = $(home)/logging/$(tag)_$(Cluster).err.$(Process)
 log = $(home)/logging/$(tag)_$(Cluster).log.$(Process)
-arguments = $(fragment) $(nevents) $(ncpus) /eos/user/s/sawebb/HInv/FXFX_OUTPUT/$(tag)
+arguments = $(fragment) $(nevents_perjob) $(ncpus) /eos/user/s/sawebb/HInv/FXFX_OUTPUT/$(tag) $(Process)
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 Universe = vanilla
@@ -17,6 +17,6 @@ notification = Error
 Initialdir = . 
 getenv = False
 request_cpus = $(ncpus)
-+MaxRuntime = 43200
-
+#+MaxRuntime = 43200
++JobFlavour = "testmatch"
 queue $(njobs)
